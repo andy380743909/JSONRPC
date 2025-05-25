@@ -228,10 +228,20 @@ extension JSONRPCSession {
 	public func response<Request, Response>(to method: String, params: Request) async throws -> Response
 	where Request: Encodable, Response: Decodable {
 		let (_, data) = try await sendDataRequest(params, method: method)
-
-		let response = try decoder.decode(JSONRPCResponse<Response>.self, from: data)
-
-		return try response.content.get()
+		
+		print("response: \(String(data: data, encoding: .utf8))")
+		
+		do {
+			let response = try decoder.decode(JSONRPCResponse<Response>.self, from: data)
+			
+			return try response.content.get()
+		} catch let error {
+			
+			print(error)
+			
+			throw error
+		}
+//		return try response.content.get()
 	}
 
 	public func response<Response>(to method: String) async throws -> Response
